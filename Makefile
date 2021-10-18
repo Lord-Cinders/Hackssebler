@@ -3,4 +3,4 @@ INCLUDES = -I ./includes
 OBJECTS = 
 
 all:
-	g++ $(FLAGS) ./src/assemble.cpp -o ./bin/assemble $(INCLUDES) $(OBJECTS)
+	g++ $(FLAGS) ./src/assemble.cpp -o -L ./lib ./bin/assemble $(INCLUDES) $(OBJECTS)
