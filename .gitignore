@@ -1,3 +1,5 @@
 bin
 lib
 .vscode
+test.cpp
+test.exe
