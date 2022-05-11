@@ -12,10 +12,11 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+
 using namespace std;
 
 // opcodes for destination
-unordered_map<string, int> destOpCodes = {
+unordered_map<string, char> destOpCodes = {
     {""   , 0b000},
     {"M"  , 0b001},
     {"D"  , 0b010},
@@ -26,7 +27,7 @@ unordered_map<string, int> destOpCodes = {
     {"AMD", 0b111},
 };
 // Opcodes for registers
-unordered_map<string, int> RegOpCodes = {
+unordered_map<string, char> RegOpCodes = {
     {"R0"    , 0b000},
     {"R1"    , 0b001},
     {"R2"    , 0b010},
@@ -43,12 +44,12 @@ unordered_map<string, int> RegOpCodes = {
     {"R13"   , 0b1101},
     {"R14"   , 0b1110},
     {"R15"   , 0b1111},
-    {"SCREEN", 0b11111110110000},
+    {"SCREEN", 0b100000000000000},
     {"KBD"   , 0b110000000000000}
 };
 
 // opcodes for jump instructions
-unordered_map<string, int> jumpOpCodes = {
+unordered_map<string, char> jumpOpCodes = {
     {""   , 0b000},
     {"JGT", 0b001},
     {"JEQ", 0b010},
@@ -60,7 +61,7 @@ unordered_map<string, int> jumpOpCodes = {
 };
 
 // opcodes for arithmetic instructions
-unordered_map<string, int> compOpCodes = {
+unordered_map<string, char> compOpCodes = {
     {"0"  , 0b101010},
     {"1"  , 0b111111},
     {"-1" , 0b111010},
@@ -100,36 +101,67 @@ int main(int argc, char * argv[])
         return -1;
     }
     
-    vector<string> program; // Vector to store the program
+    
     ifstream infile(argv[1]);
     string line; 
+    vector<string> program; // Vector to store the program
     unordered_map<string, int> variables;
+    int lineNo = 0;
     while(getline(infile, line))
     {
         for (int i = 0; i < line.size(); i++)
         {
-            line.erase(remove(line.begin(), line.end(), ' '), line.end()); // remove whitespaces
-            if (line[i] == '/' && line[i + 1] == '/' ) // remove comments
-            {
-                line.erase(i, line.size());
+            // remove whitespaces
+            line.erase(remove(line.begin(), line.end(), ' '), line.end()); 
+
+            // remove comments
+            size_t compos = line.find("//");
+            if (compos != string::npos)
+            {  
+                line.erase(compos); 
                 break;
             }
-            if (line[i] == '@') // store variables
+
+            //store variables
+            if (line[i] == '@') 
             {
                 string var = line.substr(i + 1, line.size());
-                variables[var] = 0;
+                if (variables.find(var) == variables.end())
+                {
+                    variables[var] = 0;
+                }
+                break;
+            }
+            // store labels
+            else if (line[i] == '(') 
+            {
+                string label = line.substr(i + 1, line.size() - 1);
+                int pos = label.find(')');
+                label.erase(pos);
+                variables[label] = lineNo;
+                line = "";
+                break;
             }
         }
         if (line != "")
         {
             program.push_back(line);
+            lineNo++;
         }
+        
     }
     infile.close();
 
-    for(int i = 0; i < program.size(); i++)
+    // number the lines
+
+    for (int i = 0; i < program.size(); i++)
     {
-        cout<<i << ": " << program[i] << endl;
+        cout << i << " " << program[i] << endl;
+    }
+
+    for (auto i: variables)
+    {
+        cout << i.first << ": " << i.second << endl;
     }
     return 0;
 }
