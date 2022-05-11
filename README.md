@@ -4,7 +4,7 @@ A quick assembler made for the HACK Assembly Language.
 ## Usage
 compile the the main file and run it by linking the exe with the .asm file.
 ````
-make | g== ./src/main.cpp -o ./bin/main 
+make | g++ ./src/main.cpp -o ./bin/main 
 ./main <[Filename.asm]>
 ./main Pong.asm
 ````
