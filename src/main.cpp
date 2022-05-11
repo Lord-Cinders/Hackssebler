@@ -136,6 +136,7 @@ int main(int argc, char * argv[])
     string line; 
     vector<string> program; // Vector to store the program
     unordered_map<string, string> variables; // hash map to store variables with its corresponsing register address
+    vector<string> orderofvar; //keeps track of the order of the variables
     int lineNo = 0;
     while(getline(infile, line))
     {
@@ -168,6 +169,7 @@ int main(int argc, char * argv[])
                 {
                     if(variables.find(var) == variables.end())
                     {
+                        orderofvar.insert(orderofvar.end(), var);
                         variables[var] = "0";
                     }
                 }
@@ -194,12 +196,12 @@ int main(int argc, char * argv[])
     infile.close();
 
     // assign registers to predefined and user defined symbols
-    for (auto i: variables)
+    int extReg = 16;
+    for (auto i: orderofvar)
     {
-        int extReg = 16;
-        if(variables[i.first] == "0" && i.first != "R0")
+        if(variables[i] == "0" )
         {
-            variables[i.first] = to_string(extReg);
+            variables[i] = to_string(extReg);
             extReg++;
             if(extReg > 264576) { break; } 
         }
@@ -210,11 +212,14 @@ int main(int argc, char * argv[])
         // A - Instruction: @value = 0binary(value) (16)
         if(program[i][0] == '@')
         {
+            //cout<<program[i]<< ": ";
             string var = program[i].substr(1, program[i].size());
             string opcode = "0";
             if(isDigits(var)) { opcode += bitset<15> (stoi(var)).to_string(); }
             else { opcode += bitset<15> (stoi(variables[var])).to_string(); }
+            //cout<<opcode<<endl;
             program[i].replace(program[i].begin(), program[i].end(), opcode);
+            //cout<<program[i]<<endl;
             continue;
         }
         //cout<<program[i]<<": ";
@@ -235,7 +240,7 @@ int main(int argc, char * argv[])
             compinst = compOpCodes[compinst];
             jmpinst = jumpOpCodes[jmpinst];
             opcode += a + compinst + destcode + jmpinst;
-            program[i].replace(0, program.size(), opcode);
+            program[i].replace(program[i].begin(), program[i].end(), opcode);
         }
         // instruction if of type comp ; jmp
         else if(equalPos == string::npos)
@@ -246,7 +251,7 @@ int main(int argc, char * argv[])
             compinst = compOpCodes[compinst];
             jmpinst = jumpOpCodes[program[i].substr(semiPos + 1, program[i].size())];
             opcode += a + compinst + destcode + jmpinst;
-            program[i].replace(0, program.size(), opcode);
+            program[i].replace(program[i].begin(), program[i].end(), opcode);
         }
         // instruction if of type dest = comp ; jmp
         else
@@ -257,7 +262,7 @@ int main(int argc, char * argv[])
             compinst = compOpCodes[compinst];
             jmpinst = jumpOpCodes[program[i].substr(semiPos + 1, program[i].size())];
             opcode += a + compinst + destcode + jmpinst;
-            program[i].replace(0, program.size(), opcode);
+            program[i].replace(program[i].begin(), program[i].end(), opcode);
         }
         //cout<<program[i] << endl;
     }
