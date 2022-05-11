@@ -150,6 +150,7 @@ int main(int argc, char * argv[])
             if (compos != string::npos)
             {  
                 line.erase(compos); 
+                break;
             }
 
             //store variables
@@ -240,7 +241,6 @@ int main(int argc, char * argv[])
             compinst = compOpCodes[compinst];
             jmpinst = jumpOpCodes[jmpinst];
             opcode += a + compinst + destcode + jmpinst;
-            program[i].replace(program[i].begin(), program[i].end(), opcode);
         }
         // instruction if of type comp ; jmp
         else if(equalPos == string::npos)
@@ -251,7 +251,6 @@ int main(int argc, char * argv[])
             compinst = compOpCodes[compinst];
             jmpinst = jumpOpCodes[program[i].substr(semiPos + 1, program[i].size())];
             opcode += a + compinst + destcode + jmpinst;
-            program[i].replace(program[i].begin(), program[i].end(), opcode);
         }
         // instruction if of type dest = comp ; jmp
         else
@@ -262,9 +261,10 @@ int main(int argc, char * argv[])
             compinst = compOpCodes[compinst];
             jmpinst = jumpOpCodes[program[i].substr(semiPos + 1, program[i].size())];
             opcode += a + compinst + destcode + jmpinst;
-            program[i].replace(program[i].begin(), program[i].end(), opcode);
+            
         }
         //cout<<program[i] << endl;
+        program[i].replace(program[i].begin(), program[i].end(), opcode);
     }
 
     // write to file

@@ -3,4 +3,4 @@ INCLUDES = -I ./includes
 OBJECTS = 
 
 all:
-	g++ $(FLAGS)  ./src/main.cpp $(INCLUDES) -o ./bin/main
+	g++ $(FLAGS)  ./src/main.cpp $(INCLUDES) -o ./bin/Hackssembler
