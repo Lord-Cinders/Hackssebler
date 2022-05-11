@@ -1,9 +1,9 @@
 /*
     Hackssembler
     started on 18/10/21
-    
+    Finished on 12/05/22
     "why does my back hurt?" - Cinders21
-
+    "maybe because you kept procrastinating for 7 months"(you deserve it) - Cinders22 
 */
 
 #include <iostream>
@@ -16,6 +16,7 @@
 
 using namespace std;
 
+// utility functions
 void printProgram(vector<string> program)
 {
     for(int i = 0; i < program.size(); i++)
@@ -51,10 +52,15 @@ unordered_map<string, string> destOpCodes = {
 // Opcodes for registers
 unordered_map<string, string> regOpCodes = {
     {"R0"    , "0"},
+    {"SP"    , "0"},
     {"R1"    , "1"},
+    {"LCL"   , "1"},
     {"R2"    , "2"},
+    {"ARG"   , "2"},
     {"R3"    , "3"},
+    {"THIS"  , "3"},
     {"R4"    , "4"},
+    {"THAT"  , "4"},
     {"R5"    , "5"},
     {"R6"    , "6"},
     {"R7"    , "7"},
@@ -187,8 +193,6 @@ int main(int argc, char * argv[])
     }
     infile.close();
 
-    
-
     // assign registers to predefined and user defined symbols
     for (auto i: variables)
     {
@@ -223,6 +227,7 @@ int main(int argc, char * argv[])
         string opcode = "111";
         string a = "0";
 
+        // instruction if of type dest = comp
         if(semiPos == string::npos) { 
             destcode = destOpCodes[program[i].substr(0, equalPos)];
             compinst = program[i].substr(equalPos + 1, program[i].size());
@@ -232,6 +237,7 @@ int main(int argc, char * argv[])
             opcode += a + compinst + destcode + jmpinst;
             program[i].replace(0, program.size(), opcode);
         }
+        // instruction if of type comp ; jmp
         else if(equalPos == string::npos)
         {
             destcode = destOpCodes[destcode];
@@ -242,6 +248,7 @@ int main(int argc, char * argv[])
             opcode += a + compinst + destcode + jmpinst;
             program[i].replace(0, program.size(), opcode);
         }
+        // instruction if of type dest = comp ; jmp
         else
         {
             destcode = destOpCodes[program[i].substr(0, equalPos)];
@@ -255,6 +262,7 @@ int main(int argc, char * argv[])
         //cout<<program[i] << endl;
     }
 
+    // write to file
     string filename = "";
     for(int i = 0; argv[1][i] != '\0'; i++)
     {
@@ -268,7 +276,5 @@ int main(int argc, char * argv[])
     {
         outfile << program[i]<<endl;
     }
-    
-    // printProgram(program);
     return 0;
 }
