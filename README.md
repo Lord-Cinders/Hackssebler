@@ -8,5 +8,5 @@ make | g++ ./src/main.cpp -o ./bin/main
 ./main <[Filename.asm]>
 ./main Pong.asm
 ````
-ensure that the .asm files are in the same location as the .exe file
+ensure that the .asm files are in the same location as the .exe file <br>
 several .asm files are included with the source code.
